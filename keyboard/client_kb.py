@@ -9,3 +9,9 @@ start_markup = ReplyKeyboardMarkup(resize_keyboard=True,
                                    one_time_keyboard=True)
 
 start_markup.row(mem, music, video, motivationVideo)
+
+cancel_button = KeyboardButton("Отменить регестарцию")
+cancel_markup = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+    one_time_keyboard=True
+).add(cancel_button)
