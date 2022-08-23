@@ -99,7 +99,7 @@ async def delete_ali_menu(message: types.Message):
                                  caption=f"meals_dish: {dish[1]}\n"
                                          f"name_dish: {dish[2]}\n"
                                          f"description_dish: {dish[3]}\n"
-                                         f"price_dish: {dish[4]}\n",
+                                         f"price_dish: {dish[4]} $\n",
                                  reply_markup=InlineKeyboardMarkup().add(
                                      InlineKeyboardButton(
                                          f"Delete: {dish[2]}",
