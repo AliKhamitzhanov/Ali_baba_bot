@@ -41,6 +41,6 @@ async def sql_command_all():
     return cursor.execute("SELECT * FROM ali_menu").fetchall()
 
 
-async def sql_command_delete(id):
-    cursor.execute("DELETE FROM ali_menu WHERE name_dish == ?", (id,))
+async def sql_command_delete(name_dish):
+    cursor.execute("DELETE FROM ali_menu WHERE name_dish == ?", (name_dish,))
     db.commit()
