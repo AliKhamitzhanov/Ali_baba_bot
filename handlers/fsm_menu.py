@@ -2,10 +2,11 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from config import ADMIN
-from config import bot
-from keyboard.client_kb import cancel_markup
+from config import bot, ADMIN
+from keyboard.client_kb import cancel_markup, meals
+from database import bot_db
 
 
 class FSMAdmin(StatesGroup):  # Finite State Machine
@@ -26,8 +27,6 @@ async def fsm_start_menu(message: types.Message):
 
 async def load_photo_dish(message: types.Message, state: FSMContext):
     async with state.proxy() as ali_menu:
-        ali_menu['id'] = message.from_user.id
-        ali_menu['username'] = f"@{message.from_user.username}"
         ali_menu['photo_dish'] = message.photo[0].file_id
     await FSMAdmin.next()
     await message.answer("Напишите название блюда(>_<):")
@@ -59,8 +58,9 @@ async def load_price_dish(message: types.Message, state: FSMContext):
                                      caption=f"Название вашего блюда: {ali_menu['name_dish']}\n"
                                              f"Описание вашего блюда: {ali_menu['description_dish']}\n"
                                              f"Цена вашего блюда: {ali_menu['price_dish']} $")
-                await state.finish()
-                await message.answer(f"На этом все, технолог общественного питания {message.from_user.first_name}")
+            await bot_db.sql_command_insert(state)
+            await state.finish()
+            await message.answer(f"На этом все, технолог общественного питания {message.from_user.first_name}")
         else:
             await bot.send_message(message.chat.id, " Э Ой бой ты так цену не задирай мы же простой народ(^_^)")
     except ValueError:
@@ -77,6 +77,32 @@ async def cancel_registration(message: types.Message, state: FSMContext):
         await message.answer("Ой бой регистрация отменена гой.")
 
 
+async def delete_ali_menu(message: types.Message):
+    if message.from_user.id in ADMIN and message.chat.type == "private":
+        dishes = await bot_db.sql_command_all()
+        for dish in dishes:
+            await bot.send_photo(message.from_user.id, dish[0],
+                                 caption=f"name_dish: {dish[1]}\n"
+                                         f"description_dish: {dish[2]}\n"
+                                         f"price_dish: {dish[3]}\n",
+                                 reply_markup=InlineKeyboardMarkup().add(
+                                     InlineKeyboardButton(
+                                         f"Delete: {dish[1]}",
+                                         callback_data=f"Delete {dish[1]}"
+                                     )
+                                 )
+                                 )
+    else:
+        await message.reply("Ой бой ты кто?\n"
+                            "Ты не мой Создатель (-_-)")
+
+
+async def complete_delete_dish(call: types.CallbackQuery):
+    await bot_db.sql_command_delete(call.data.replace('Delete ', ""))
+    await call.answer(text="Ой ты блюдо уничтожил.", show_alert=True)
+    await bot.delete_message(call.message.chat.id, call.message.message_id)
+
+
 def register_handlers_fsm_menu(dp: Dispatcher):
     dp.register_message_handler(cancel_registration, state='*', commands='Отменить регестарцию')
     dp.register_message_handler(cancel_registration, Text(equals='Отменить регестарцию', ignore_case=True), state='*')
@@ -86,3 +112,8 @@ def register_handlers_fsm_menu(dp: Dispatcher):
     dp.register_message_handler(load_name_dish, state=FSMAdmin.name_dish)
     dp.register_message_handler(load_description_dish, state=FSMAdmin.description_dish)
     dp.register_message_handler(load_price_dish, state=FSMAdmin.price_dish)
+    dp.register_message_handler(delete_ali_menu, commands=['del'])
+    dp.register_callback_query_handler(
+        complete_delete_dish,
+        lambda call: call.data and call.data.startswith("Delete ")
+    )

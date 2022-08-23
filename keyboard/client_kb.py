@@ -15,3 +15,15 @@ cancel_markup = ReplyKeyboardMarkup(
     resize_keyboard=True,
     one_time_keyboard=True
 ).add(cancel_button)
+
+
+breakfast = KeyboardButton("Завтрак")
+lunch = KeyboardButton("Ланч")
+obed = KeyboardButton("Обед")
+afternoon_tea = KeyboardButton("Полдник")
+dinner = KeyboardButton("Ужин")
+
+meals = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+    one_time_keyboard=True
+).row(breakfast, lunch, obed, afternoon_tea, dinner)

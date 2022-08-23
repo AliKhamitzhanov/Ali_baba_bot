@@ -3,6 +3,12 @@ from config import dp
 import logging
 from handlers import client, keyboard, admin, extra, fsm_menu
 from handlers import callback_easy, callback_medium, callback_hard
+from database import bot_db
+
+
+async def on_start(_):
+    bot_db.sql_create()
+
 
 client.register_handlers_client(dp)
 keyboard.register_handlers_keyboard(dp)
@@ -19,4 +25,4 @@ extra.register_handlers_extra(dp)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    executor.start_polling(dp, skip_updates=True)
+    executor.start_polling(dp, skip_updates=True, on_startup=on_start)
