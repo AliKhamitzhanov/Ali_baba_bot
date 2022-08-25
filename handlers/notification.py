@@ -24,8 +24,8 @@ async def go_to_sleep_dragons():
 
 
 async def scheduler():
-    aioschedule.every().day.at("1:35").do(good_morning_dragons)
-    aioschedule.every().day.at("1:35").do(go_to_sleep_dragons)
+    aioschedule.every().day.at("6:00").do(good_morning_dragons)
+    aioschedule.every().day.at("21:30").do(go_to_sleep_dragons)
 
 
     while True:
