@@ -3,6 +3,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from config import bot
 import random
 from keyboard.client_kb import start_markup
+from perser.doramy import parser
 import time
 
 
@@ -211,6 +212,23 @@ async def motivationVideo(message: types.Message):
     await bot.send_video(message.chat.id, video=video)
 
 
+async def parser_doramy(message: types.Message):
+    data = parser()
+    for item in data:
+        await bot.send_message(
+            message.from_user.id,
+            f"{item['link']}\n\n"
+            f"{item['title']}\n"
+            f"Автор: {item['authors']}\n\n"
+            f"#{item['series']}\n"
+            f"#{item['country']}\n"
+            f"#{item['year']}\n"
+            f"#{item['added']}"
+        )
+
+
+
+
 def register_handlers_client(dp: Dispatcher):
     dp.register_message_handler(menu, commands=['start'])
     dp.register_message_handler(pin, commands=['pin'], commands_prefix=['!'])
@@ -224,3 +242,4 @@ def register_handlers_client(dp: Dispatcher):
     # dp.register_message_handler(allMusic, commands=['allMusic'])
     dp.register_message_handler(video, commands=['video'])
     dp.register_message_handler(motivationVideo, commands=['motivationVideo'])
+    dp.register_message_handler(parser_doramy, commands=['doramy'])
