@@ -223,10 +223,9 @@ async def parser_doramy(message: types.Message):
             f"#{item['series']}\n"
             f"#{item['country']}\n"
             f"#{item['year']}\n"
-            f"#{item['added']}"
+            f"#{item['genre']}\n"
+            f"#{item['added']}\n"
         )
-
-
 
 
 def register_handlers_client(dp: Dispatcher):
