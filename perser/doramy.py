@@ -20,16 +20,20 @@ def get_data(html):
     # print(items)
     doramy = []
     for item in items:
-        desc = item.find("table", class_="table-hom").find("tbody", class_="tbody-hom")
-        doramy.append({
-            "link": item.find("a").get("href"),
-            "title": item.find("span").getText(),
-            "authors": item.find("em").getText(),
-            "series": desc.find_all("tr")[0].getText(),
-            "country": desc.find_all("tr")[1].getText(),
-            "year": desc.find_all("tr")[2].getText(),
-            "added": desc.find_all("tr")[3].getText()
-        })
+        try:
+            desc = item.find("table", class_="table-hom").find("tbody", class_="tbody-hom")
+            doramy.append({
+                "link": item.find("a").get("href"),
+                "title": item.find("span").getText(),
+                "authors": item.find("em").getText(),
+                "series": desc.find_all("tr")[0].getText(),
+                "country": desc.find_all("tr")[1].getText(),
+                "year": desc.find_all("tr")[2].getText(),
+                "genre": desc.find_all("tr")[3].getText(),
+                "added": desc.find_all("tr")[4].getText(),
+            })
+        except IndexError:
+            pass
     return doramy
 
 
@@ -37,7 +41,7 @@ def parser():
     html = get_html(URL)
     if html.status_code == 200:
         answer = []
-        for page in range(1, 2):
+        for page in range(1, 11):
             html = get_html(f"{URL}page/{page}/")
             answer.extend(get_data(html.text))
         return answer
