@@ -37,7 +37,7 @@ def get_data(html):
     return doramy
 
 
-def parser():
+def parserDoramy():
     html = get_html(URL)
     if html.status_code == 200:
         answer = []
